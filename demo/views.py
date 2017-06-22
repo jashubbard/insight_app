@@ -6,7 +6,7 @@ import pandas as pd
 from flask import request
 import psycopg2
 from project_lib import *
-from textrank import extract_key_phrases, extract_sentences
+# from textrank import extract_key_phrases, extract_sentences
 import json
 import time
 from scipy.stats import zscore
