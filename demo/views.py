@@ -25,16 +25,16 @@ con = psycopg2.connect(database = dbname, user = user)
 def demo_input():
     query = """
 SELECT  distinct(name) FROM businesses
- WHERE  state='AZ' AND review_count>=5 AND categories LIKE '%Restaurants%'
+ WHERE  state='AZ' AND review_count>=200 AND categories LIKE '%Restaurants%'
  ORDER BY name;
 """
     query_results = pd.read_sql_query(query,con)
     # print(query_results)
 
-    return render_template("template_index.html", businesses = query_results.name)
+    return render_template("index.html", businesses = query_results.name)
 
 
-@app.route('/fancy')
+@app.route('/dashboard')
 def fancy():
   biz_name = request.args.get('biz_name')
   print(biz_name)
@@ -111,6 +111,6 @@ def fancy():
   # data_over_time.plot()
   # plt.savefig('./demo/static/time.png', dpi=199, transparent=False,bbox_inches='tight',pad_inches=0)
 
-  return render_template('horizontal_bar.html', root_path = app.root_path, examples=examples, scores = json.dumps(alldat.to_dict(orient='records')), biz_name = biz_name)
+  return render_template('dashboard.html', root_path = app.root_path, examples=examples, scores = json.dumps(alldat.to_dict(orient='records')), biz_name = biz_name)
 
 
