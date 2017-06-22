@@ -1,4 +1,5 @@
 from flask import render_template, url_for
+from flask import request
 from demo import app
 # from sqlalchemy import create_engine
 # from sqlalchemy_utils import database_exists, create_database
@@ -10,6 +11,9 @@ from project_lib import *
 import json
 import time
 from scipy.stats import zscore
+
+
+print('kind of working')
 
 #connect to database
 user = 'insightdb' #add your username here (same as previous postgreSQL)                      
