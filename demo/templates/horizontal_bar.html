@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+
+
+<style>
+
+.widget {
+    margin: 0 auto;
+    width:120px;
+    margin-top:0px;
+    background-color:#fff;
+    -background-color: #222D3A;
+    border-radius: 5px;
+    box-shadow: 1px 1px 4px 0px rgba(0,0,0,0.3);
+    position:absolute;
+    left: 2%;
+    top:  8%;
+
+}
+
+#bars {
+  position:absolute;
+  top: 6%;
+  left: 15%;
+}
+
+
+.chart-container{
+    padding:0px;
+}
+
+
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-moz-keyframes fadein { /* Firefox */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-o-keyframes fadein { /* Opera */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+body, html {
+    height: 100%;
+}
+
+.bg { 
+    /* The image used */
+    background-image: url("../static/img/bg.jpg");
+
+    /* Full height */
+    height: 100%; 
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#star-header{
+    background-color: rgba(240, 107, 62,.9);
+    /*background-image: none;*/
+    height:30px;
+    /*color:#555;*/
+    text-align: center;
+    line-height: 30px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    font-weight: 400;
+    font-size: 14pt;
+    text-shadow: 1px 1px #fff;
+    border-bottom: 1px solid #eaeaea;
+}
+
+
+#my_container {
+  width: 95%;
+  height: 90%;
+  background-color: rgba(255,255,255,1);
+  border: solid 2px #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  position: absolute;
+  left: 2.5%;
+  top: 5%;
+  animation: fadein 3s;
+    -moz-animation: fadein 2s; /* Firefox */
+    -webkit-animation: fadein 2s; /* Safari and Chrome */
+    -o-animation: fadein 2s; /* Opera */
+
+
+}
+
+.tooltip-container {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 1);
+  /*background-color: #478e99;*/
+ /* border: solid 1px #ccc;
+  border-radius: 4px;*/
+  padding: 5px;
+  /*visibility: hidden;*/
+  transition: all 0.5s;
+  /*overflow-y: auto;*/
+  width: 300px;
+  height: 84%;
+  align-content: center;
+  right: 1%;
+  top: 8%;
+  box-shadow: 1px 1px 4px 0px;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 1);
+  /*background-color: #478e99;*/
+ /* border: solid 1px #ccc;
+  border-radius: 4px;*/
+  padding: 5px;
+  /*visibility: hidden;*/
+  transition: all 0.5s;
+  overflow-y: auto;
+  width: 95%;
+  height: 97%;
+  align-content: center;
+}
+
+.sentence:hover{
+ background-color: rgba(240, 107, 62,.8);
+
+}
+
+.sentence{
+/*border: solid 1px #ccc;*/
+border-radius: 8px;
+/*border: solid 1px #ccc;*/
+/*border-radius: 4px;*/
+padding: 10px;
+width: 90%;
+left: 1%;
+position: relative;
+background-color: rgba(255,255,255,1);
+margin-top: 10px;
+margin-bottom: 10px;
+margin-left: 0px;
+box-shadow: 1px 1px 4px 0px;
+}
+
+
+#example1{
+  visibility: hidden;
+}
+#example2{
+  visibility: hidden;
+}
+#example3{
+  visibility: hidden;
+}
+#example4{
+  visibility: hidden;
+}
+#example5{
+  visibility: hidden;
+}
+
+rect {
+  transition: fill 0.3s;
+}
+rect:hover {
+  fill: rgba(240, 107, 62,.8);
+}
+
+.axis text {
+  font: 12px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+
+</style>
+
+
+    <!-- Bootstrap Core CSS -->
+    <!-- <link href="../static/css/bootstrap.min.css" rel="stylesheet"> -->
+
+    <!-- Custom CSS -->
+    <link href="../static/css/stylish-portfolio.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+</head>
+<body>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+    <!-- jQuery -->
+    <script src="../static/js/jquery.js"></script>
+
+<script> 
+$(document).ready(function(){
+    $("#flip").click(function(){
+        $("#panel").slideToggle("slow");
+    });
+});
+</script>
+<div  class='bg'>
+<div id='my_container'>
+
+<h2 align='center'>{{biz_name}}</h2>
+<div id='bars' align="center"></div>
+
+<div class="widget" align='center'>
+    <div class="star-header">Star Ratings</div>
+    <div id="chart" class="chart-container"></div>
+</div>
+
+<br><br><br>
+ <div class="tooltip-container">
+      
+  <div id = 'example1' class='tooltip'>
+    <div class='star-header' align="center">Ambience</div>
+        {% for sent in examples.loc[examples.topic==0,'sentence'].tolist()%}
+     <div class='sentence'>{{sent}}</div>
+
+      {% endfor %}
+    </div>
+    <div id = 'example2' class='tooltip'>
+    <div class='star-header' align="center">Service</div>
+        {% for sent in examples.loc[examples.topic==1,'sentence'].tolist()%}
+     <div class='sentence'>{{sent}}</div>
+
+      {% endfor %}
+    </div>
+    <div id = 'example3' class='tooltip'>
+      <div class='star-header' align="center">Food</div> 
+        {% for sent in examples.loc[examples.topic==2,'sentence'].tolist()%}
+     <div class='sentence'>{{sent}}</div>
+      {% endfor %}
+    </div>
+    <div id = 'example4' class='tooltip'>
+<div class='star-header' align="center">Speed</div>
+        {% for sent in examples.loc[examples.topic==3,'sentence'].tolist()%}
+     <div class='sentence'>{{sent}}</div> 
+      {% endfor %}
+    </div>
+    <div id = 'example5' class='tooltip'>
+    <div class='star-header' align="center">Ethnic Food</div>
+        {% for sent in examples.loc[examples.topic==4,'sentence'].tolist()%}
+     <div class='sentence'>{{sent}}</div>
+    
+      {% endfor %}
+  
+    </div>
+  </div>
+</div>
+</div>
+
+<br />
+<br />
+<br />
+<br />
+
+<script type="text/javascript">
+function toggler(divId) {
+    $("#" + divId).toggle();
+}
+
+ drawradial = function(val,maxval,div){
+    
+    var percent = val/maxval*100;
+    val = Number(Math.round(val+'e2')+'e-2');
+
+    var ratio=percent/maxval;
+    console.log(percent)
+
+    var pie=d3.layout.pie()
+            .value(function(d){return d})
+            .sort(null);
+
+    var w=100, h=100;
+
+    var outerRadius=(w/2)-10;
+    var innerRadius=40;
+
+
+    var color = ['ececec','#f06b3e','#888888'];
+
+    var arc=d3.svg.arc()
+            .innerRadius(0)
+            .outerRadius(outerRadius)
+            .startAngle(0)
+            .endAngle(2*Math.PI);
+
+
+    var arcLine=d3.svg.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius-10)
+            .startAngle(0);
+
+    var svg=d3.select(div)
+            .append("svg")
+            .attr({
+                width:w,
+                height:h,
+                class:'shadow'
+            }).append('g')
+            .attr({
+                transform:'translate('+w/2+','+h/2+')'
+            });
+
+    var defs = svg.append("svg:defs");
+
+    var inset_shadow = defs.append("svg:filter")
+            .attr("id", "inset-shadow");
+
+    inset_shadow.append("svg:feOffset")
+            .attr({
+                dx:0,
+                dy:0
+            });
+
+    inset_shadow.append("svg:feGaussianBlur")
+            .attr({
+                stdDeviation:4,
+                result:'offset-blur'
+            });
+
+    inset_shadow.append("svg:feComposite")
+            .attr({
+                operator:'out',
+                in:'SourceGraphic',
+                in2:'offset-blur',
+                result:'inverse'
+            });
+
+    inset_shadow.append("svg:feFlood")
+            .attr({
+                'flood-color':'black',
+                'flood-opacity':.7,
+                result:'color'
+            });
+
+    inset_shadow.append("svg:feComposite")
+            .attr({
+                operator:'in',
+                in:'color',
+                in2:'inverse',
+                result:'shadow'
+            });
+
+    inset_shadow.append("svg:feComposite")
+            .attr({
+                operator:'over',
+                in:'shadow',
+                in2:'SourceGraphic'
+            });
+
+    var path=svg.append('path')
+            .attr({
+                d:arc
+            })
+            .style({
+                fill:color[0],
+                filter:'url(#inset-shadow)'
+            });
+
+
+    var pathForeground=svg.append('path')
+            .datum({endAngle:0})
+            .attr({
+                d:arcLine,
+                transform:'rotate(180)'
+            })
+            .style({
+                fill:color[1],
+                filter:'url(#inset-shadow)'
+            });
+
+
+    var middleCount=svg.append('text')
+            .datum(0)
+            .text(function(d){
+                return d;
+            })
+
+            .attr({
+                class:'middleText',
+                'text-anchor':'middle',
+                dy:10
+            })
+            .style({
+                fill:d3.rgb(color[2]),
+                'font-size':'20px',
+                filter:'url(#inset-shadow)'
+
+
+            });
+
+    var oldValue=0;
+
+    var arcTween=function(transition, newValue,oldValue) {
+        transition.attrTween("d", function (d) {
+            var interpolate = d3.interpolate(d.endAngle, ((2*Math.PI))*(newValue/100));
+
+            var interpolateCount = d3.interpolate(oldValue, newValue);
+            return function (t) {
+                d.endAngle = interpolate(t);
+                middleCount.text(val)
+                // middleCount.text(Math.floor(interpolateCount(t))+'%');
+                return arcLine(d);
+            };
+        });
+    };
+
+
+    var animate=function(){
+
+        pathForeground.transition()
+                .duration(750)
+                .ease('cubic')
+                .call(arcTween,percent,oldValue);
+        oldValue=percent;
+        // percent=(Math.random() * 80) + 20;
+        // setTimeout(animate,3000);
+    };
+
+    setTimeout(animate,0);
+
+}
+
+
+var stardata = {{scores | safe}}
+
+for (i = 0; i < stardata.length; i++) { 
+   drawradial(stardata[i].stars,5,'#chart')
+   console.log(stardata[i].topic)
+}
+
+</script>
+
+
+<script>
+// var data = [{name:1,value: 2},
+//         {name:2,value: -2},
+//         {name:3,value: 10}];
+
+var topics = {{scores | safe}}
+
+draw(topics,'#bars')
+
+
+function draw(data, div_id){
+
+var margin = {top: 20, right: 30, bottom: 40, left: 60},
+    width = 650 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.ordinal()
+    .rangeRoundBands([0, height], 0.1);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .tickSize(0)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickSize(0)
+    .tickPadding(6);
+
+var svg = d3.select(div_id).append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var tooltip = d3.select('#tooltip');
+var example1 = d3.select('#example1');
+var example2 = d3.select('#example2');
+var example3 = d3.select('#example3');
+var example4 = d3.select('#example4');
+var example5 = d3.select('#example5');
+
+// d3.tsv("data.tsv", type, function(error, data) {
+//   x.domain(d3.extent(data, function(d) { return d.value; })).nice();
+//   y.domain(data.map(function(d) { return d.name; }));
+
+
+  // x.domain(d3.extent(data, function(d) { return d.value; })).nice();
+  
+  x.domain([ 0, d3.max(data, function(d) { return Math.abs(d.prob); })]);
+  y.domain(data.map(function(d) { return d.topic; }));
+  
+
+  // var color = d3.scaleSequential(d3.interpolateRdBu)
+  //   .domain([-1, 0, +1]);
+
+  var color = d3.scale.linear()
+    .domain([-.6, 0, +.6])
+    .range(["red", "gray", "green"]);
+
+    // var color = d3.scaleSequential(d3.interpolatePiYG)
+
+ var bars= svg.selectAll(".bar")
+      .data(data)
+      .enter().append("rect")
+      // .attr("class", function(d) { return "bar bar--" + (d.sentiment < 0 ? "negative" : "positive"); })
+      .attr("x", function(d) { return x(Math.min(0, d.prob)); })
+      .attr("y", function(d) { return y(d.topic); })
+      .attr("fill", function(d) { return color(d.sentiment); })
+      .attr("width", function(d) { return Math.abs(x(d.prob) - x(0)); })
+      .attr("height", y.rangeBand())
+      .on('click', showTip);
+      // .on('mouseleave', hideTip);;
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + x(0) + ",0)")
+      .call(yAxis);
+
+ // the end result is g populated with text and lines!
+  svg.select('.x.axis').transition().duration(300).call(x);
+
+  // same for yAxis but with more transform and a title
+  svg.select(".y.axis").transition().duration(300).call(y)
+
+// });
+
+  var totalDelay = 500;
+  var oneByOne = (d, i) => {return totalDelay * i / data.length};
+
+function type(d) {
+  d.prob = +d.prob;
+  return d;
+}
+
+
+
+
+function showTip(x) {
+  // tooltip.style({
+  //   left: `${d3.event.clientX}px`,
+  //   top: `${d3.event.clientY}px`,
+  //   visibility: 'visible'
+  // }).text(`${x[0]} : ${x[1]}`);
+
+  //   tooltip.style({
+  //   left: `${d3.event.clientX}px`,
+  //   top: `${d3.event.clientY}px`,
+  //   visibility: 'visible'
+  // });
+  
+  tooltip.style('visibility', 'hidden');
+  example1.style('visibility', 'hidden');
+  example2.style('visibility', 'hidden');
+  example3.style('visibility', 'hidden');
+  example4.style('visibility', 'hidden');
+  example5.style('visibility', 'hidden');
+
+  switch(x.topic) {
+    case 'Ambience':
+         example1.style({
+    // left: `${d3.event.clientX-10}px`,
+    // top: `${d3.event.clientY}px`,
+    visibility: 'visible'
+  });
+        break;
+    case 'Service':
+        example2.style({
+    // left: `${d3.event.clientX-10}px`,
+    // top: `${d3.event.clientY}px`,
+    visibility: 'visible'
+  });
+        break;
+    case 'Food':
+     example3.style({
+    // left: `${d3.event.clientX-10}px`,
+    // top: `${d3.event.clientY}px`,
+    visibility: 'visible'
+  });
+     break;
+     case 'Speed':
+      example4.style({
+    // left: `${d3.event.clientX-10}px`,
+    // top: `${d3.event.clientY}px`,
+    visibility: 'visible'
+  });
+      break;
+      case 'Ethnic':
+      example5.style({
+    // left: `${d3.event.clientX-10}px`,
+    // top: `${d3.event.clientY}px`,
+    visibility: 'visible'
+  });
+      break;
+}
+}
+
+
+function hideTip() {
+  tooltip.style('visibility', 'hidden');
+  example1.style('visibility', 'hidden');
+  example2.style('visibility', 'hidden');
+  example3.style('visibility', 'hidden');
+  example4.style('visibility', 'hidden');
+  example5.style('visibility', 'hidden');
+}
+}
+</script>
+
+</body>
