@@ -17,10 +17,10 @@ import seaborn as sns
 model = gensim.models.ldamodel.LdaModel.load('lda_az_5topics.gz', mmap=None)
 
 #CONNECT TO DATABASE
-def connect_db(dbname,username):
+def connect_db(address,dbname,username):
     ## 'engine' is a connection to a database
     ## Here, we're using postgres, but sqlalchemy can connect to other things too.
-    engine = create_engine('postgres://%s@localhost/%s'%(username,dbname))
+    engine = create_engine('postgres://%s@%s/%s'%(username,address,dbname))
     print(engine.url)
 
     ## create a database (if it doesn't exist)

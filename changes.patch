@@ -1,0 +1,97 @@
+diff --git a/__pycache__/project_lib.cpython-36.pyc b/__pycache__/project_lib.cpython-36.pyc
+index 4c17f4a..7ddcd35 100644
+Binary files a/__pycache__/project_lib.cpython-36.pyc and b/__pycache__/project_lib.cpython-36.pyc differ
+diff --git a/demo/__pycache__/views.cpython-36.pyc b/demo/__pycache__/views.cpython-36.pyc
+index 8cd3902..efccaee 100644
+Binary files a/demo/__pycache__/views.cpython-36.pyc and b/demo/__pycache__/views.cpython-36.pyc differ
+diff --git a/demo/views.py b/demo/views.py
+index 5c79e59..36adb6d 100644
+--- a/demo/views.py
++++ b/demo/views.py
+@@ -6,7 +6,7 @@ import pandas as pd
+ from flask import request
+ import psycopg2
+ from project_lib import *
+-# from textrank import extract_key_phrases, extract_sentences
++from gensim.summarization import summarize
+ import json
+ import time
+ from scipy.stats import zscore
+diff --git a/project_lib.py b/project_lib.py
+index 461d5d7..efb66f6 100644
+--- a/project_lib.py
++++ b/project_lib.py
+@@ -12,6 +12,7 @@ import re
+ from textblob import TextBlob
+ import PIL
+ import seaborn as sns
++from gensim.summarization import summarize
+ 
+ #LOAD THE MODEL
+ model = gensim.models.ldamodel.LdaModel.load('lda_az_5topics.gz', mmap=None)
+@@ -140,15 +141,20 @@ def sentence_topics(model,rawtext,top_only=False):
+                                      
+             tmp = pd.concat([sent_df,topics_df],axis=1)
+             output.append(tmp)
++      
++        if isinstance(output,list):
++            output = pd.concat(output).reset_index(drop=True)
+         
+-    output = pd.concat(output).reset_index(drop=True)
+-    
+-    if top_only:
+-        idx = output.groupby(['sentence'])['prob'].transform(max) == output['prob']
+-        output = output[idx].reset_index(drop=True)
+-    else:
+-        output['top_prob'] = output.groupby(['sentence'])['prob'].transform(max)
+         
++        if top_only:
++            idx = output.groupby(['sentence'])['prob'].transform(max) == output['prob']
++            output = output[idx].reset_index(drop=True)
++        else:
++            output['top_prob'] = output.groupby(['sentence'])['prob'].transform(max)
++        
++    else:
++        output=None
++
+     return(output)
+     
+ 
+@@ -158,16 +164,31 @@ def topics_by_sentence(model,df,top_only=False):
+     for i in range(len(df)):
+         
+         cleantext = re.sub(r'^https?:\/\/.*[\r\n]*', '', df.text[i], flags=re.MULTILINE)
++
++        # cleantext = df.text[i]
++       
++        # print(cleantext)
+         
+         if len(cleantext)>0:
++             #run textrank on the review
++            # cleantext = summarize(cleantext, word_count=25)
+             sents = sentence_topics(model,cleantext,top_only=top_only) 
+-            sents['review_id'] = np.repeat(df.review_id[i],len(sents))
+-            output.append(sents)
+-                
+-    output = pd.concat(output)
++            
++            if sents is not None:
++                sents['review_id'] = np.repeat(df.review_id[i],len(sents))
++                output.append(sents)
+ 
+-    output['sentiment'] = [TextBlob(x).sentiment.polarity for x in output.sentence]
+-    
++
++            
++        if isinstance(output,list):
++
++            if len(output)>0:
++                output = pd.concat(output)
++        
++        
++        if isinstance(output,pd.DataFrame):
++            output['sentiment'] = [TextBlob(x).sentiment.polarity for x in output.sentence]
++        
+ 
+     return(output)
+     

@@ -1,7 +1,7 @@
 from flask import render_template, url_for
 from demo import app
-from sqlalchemy import create_engine
-from sqlalchemy_utils import database_exists, create_database
+# from sqlalchemy import create_engine
+# from sqlalchemy_utils import database_exists, create_database
 import pandas as pd
 from flask import request
 import psycopg2
@@ -11,13 +11,12 @@ import json
 import time
 from scipy.stats import zscore
 
+#connect to database
 user = 'insightdb' #add your username here (same as previous postgreSQL)                      
-host = 'localhost'
-dbname = 'yelp'
-db = create_engine('postgres://%s%s/%s'%(user,host,dbname))
-con = None
-con = psycopg2.connect(database = dbname, user = user)
+host = 'mydbinstance.cgaia5rww7ar.us-west-2.rds.amazonaws.com'
+dbname = 'project'
 
+con=psycopg2.connect(dbname= dbname, host=host, port= 5432, user= user, password= 'datascience')
 
 @app.route('/')
 @app.route('/index')
