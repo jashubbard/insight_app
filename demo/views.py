@@ -11,7 +11,7 @@ import json
 import time
 from scipy.stats import zscore
 
-user = 'thrillhouse' #add your username here (same as previous postgreSQL)                      
+user = 'insightdb' #add your username here (same as previous postgreSQL)                      
 host = 'localhost'
 dbname = 'yelp'
 db = create_engine('postgres://%s%s/%s'%(user,host,dbname))
@@ -96,7 +96,7 @@ def fancy():
 
 
 
-  topic_names = np.array(['Ambience', 'Service', 'Food', 'Speed', 'Ethnic'])
+  topic_names = np.array(['Ambience', 'Service', 'Food', 'Speed', 'International'])
 
   alldat['topic'] = topic_names[alldat.topic.values.astype(int)]
 
