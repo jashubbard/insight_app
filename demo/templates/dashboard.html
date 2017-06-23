@@ -16,15 +16,19 @@
     position:absolute;
     left: 2%;
     top:  8%;
+    height: 84%;
+    min-height:500px;
 
 }
 
-#bars {
-  position:absolute;
-  top: 6%;
-  left: 16%;
-}
 
+#bars{
+    left: 14%;
+    top:  6%;
+    height: 84%;
+    min-height:500px;
+    position: absolute;
+}
 
 .chart-container{
     padding:0px;
@@ -66,6 +70,7 @@
 
 body, html {
     height: 100%;
+    min-height: 600px;
 }
 
 .bg { 
@@ -98,11 +103,14 @@ body, html {
 
 
 #my_container {
-  width: 95%;
-  height: 90%;
+  width: 1160px;
+  min-width:1100px;
+  height: 660px;
+  min-height: 500px;
   background-color: rgba(255,255,255,1);
-  border: solid 2px #ccc;
-  border-radius: 4px;
+  /*border: solid 2px #ccc;*/
+  border-radius: 8px;
+  box-shadow: 1px 1px 4px 0px rgba(0,0,0,0.3);
   padding: 10px;
   position: absolute;
   left: 2.5%;
@@ -130,10 +138,11 @@ body, html {
   align-content: center;
   right: 1%;
   top: 8%;
-  box-shadow: 1px 1px 4px 0px;
+  box-shadow: 1px 1px 4px 0px rgba(0,0,0,0.3);
+  border-radius: 5px;
 }
 
-.tooltip {
+.tooltip_div {
   position: absolute;
   background-color: rgba(255, 255, 255, 1);
   /*background-color: #478e99;*/
@@ -143,32 +152,31 @@ body, html {
   /*visibility: hidden;*/
   transition: all 0.5s;
   overflow-y: auto;
-  width: 95%;
-  height: 97%;
+  width: 295px;
+  height: 99%;
   align-content: center;
 }
 
-.sentence:hover{
+.sentence_div:hover{
  background-color: rgba(240, 107, 62,.8);
 
 }
 
-.sentence{
+.sentence_div{
 /*border: solid 1px #ccc;*/
 border-radius: 8px;
 /*border: solid 1px #ccc;*/
 /*border-radius: 4px;*/
 padding: 10px;
-width: 90%;
+width: 98%;
 left: 1%;
 position: relative;
 background-color: rgba(255,255,255,1);
 margin-top: 10px;
 margin-bottom: 10px;
 margin-left: 0px;
-box-shadow: 1px 1px 4px 0px;
+  box-shadow: 1px 1px 4px 0px rgba(0,0,0,0.3);
 }
-
 
 #example1{
   visibility: hidden;
@@ -188,6 +196,7 @@ box-shadow: 1px 1px 4px 0px;
 
 rect {
   transition: fill 0.3s;
+    box-shadow: 1px 1px 4px 0px rgba(0,0,0,0.3);
 }
 rect:hover {
   fill: rgba(240, 107, 62,.8);
@@ -204,12 +213,24 @@ rect:hover {
   shape-rendering: crispEdges;
 }
 
+#nav{
+  position:absolute;
+  left: 40px;
+  top: 93%;
+}
+
+#instruction{
+
+position:absolute;
+width: 100%;
+top: 50%;
+}
 
 </style>
 
 
     <!-- Bootstrap Core CSS -->
-    <!-- <link href="../static/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link href="../static/css/stylish-portfolio.css" rel="stylesheet">
@@ -235,6 +256,7 @@ $(document).ready(function(){
 <div id='my_container'>
 
 <h2 align='center'>{{biz_name}}</h2>
+<div align='center' id='nav'><a class="btn btn-info"  href="/index" role="button">Start Over</a></div>
 <div id='bars' align="center"></div>
 
 <div class="widget" align='center'>
@@ -244,37 +266,37 @@ $(document).ready(function(){
 
 <br><br><br>
  <div class="tooltip-container">
-      
-  <div id = 'example1' class='tooltip'>
+      <div  align="center" id='instruction'>Click a Bar for Examples</div>
+  <div id = 'example1' class='tooltip_div'>
     <div class='star-header' align="center">Ambience</div>
         {% for sent in examples.loc[examples.topic==0,'sentence'].tolist()%}
-     <div class='sentence'>{{sent}}</div>
+     <div class='sentence_div'>{{sent}}</div>
 
       {% endfor %}
     </div>
-    <div id = 'example2' class='tooltip'>
+    <div id = 'example2' class='tooltip_div'>
     <div class='star-header' align="center">Service</div>
         {% for sent in examples.loc[examples.topic==1,'sentence'].tolist()%}
-     <div class='sentence'>{{sent}}</div>
+     <div class='sentence_div'>{{sent}}</div>
 
       {% endfor %}
     </div>
-    <div id = 'example3' class='tooltip'>
+    <div id = 'example3' class='tooltip_div'>
       <div class='star-header' align="center">Food</div> 
         {% for sent in examples.loc[examples.topic==2,'sentence'].tolist()%}
-     <div class='sentence'>{{sent}}</div>
+     <div class='sentence_div'>{{sent}}</div>
       {% endfor %}
     </div>
-    <div id = 'example4' class='tooltip'>
+    <div id = 'example4' class='tooltip_div'>
 <div class='star-header' align="center">Speed</div>
         {% for sent in examples.loc[examples.topic==3,'sentence'].tolist()%}
-     <div class='sentence'>{{sent}}</div> 
+     <div class='sentence_div'>{{sent}}</div> 
       {% endfor %}
     </div>
-    <div id = 'example5' class='tooltip'>
+    <div id = 'example5' class='tooltip_div'>
     <div class='star-header' align="center">International Cuisine</div>
         {% for sent in examples.loc[examples.topic==4,'sentence'].tolist()%}
-     <div class='sentence'>{{sent}}</div>
+     <div class='sentence_div'>{{sent}}</div>
     
       {% endfor %}
   
@@ -527,9 +549,39 @@ var example5 = d3.select('#example5');
   // var color = d3.scaleSequential(d3.interpolateRdBu)
   //   .domain([-1, 0, +1]);
 
+  // var color = d3.scale.linear()
+  //   .domain([-.6, 0, +.6])
+  //   .range(["red", "gray", "green"]);
+
+
   var color = d3.scale.linear()
-    .domain([-.6, 0, +.6])
-    .range(["red", "gray", "green"]);
+   .domain([-.6, 0, +.6])
+  // .domain([0, d3.max(accidents, function(d) {return d.count; })/2, d3.max(accidents, function(d) {return d.count; })])
+  .range(["#FFFFDD", "#3E9583", "#1F2D86"])
+  .interpolate(d3.interpolateHcl);
+
+
+///////////////////////////////////////////////////////////////////////////
+//////////////// Create the gradient for the legend ///////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+//Extra scale since the color scale is interpolated
+var countScale = d3.scale.linear()
+  .domain([-1, 1])
+  // .domain([0, d3.max(accidents, function(d) {return d.count; })])
+  .range([0, width])
+ .interpolate(d3.interpolateHcl);
+
+//Calculate the variables for the temp gradient
+var numStops = 10;
+countRange = countScale.domain();
+countRange[2] = countRange[1] - countRange[0];
+countPoint = [];
+for(var i = 0; i < numStops; i++) {
+  countPoint.push(i * countRange[2]/(numStops-1) + countRange[0]);
+}//for i
+
+
 
     // var color = d3.scaleSequential(d3.interpolatePiYG)
 
@@ -572,6 +624,47 @@ function type(d) {
 }
 
 
+//Create the gradient
+svg.append("defs")
+  .append("linearGradient")
+  .attr("id", "legend-traffic")
+  .attr("x1", "0%").attr("y1", "0%")
+  .attr("x2", "100%").attr("y2", "0%")
+  .selectAll("stop") 
+  .data(d3.range(numStops))                
+  .enter().append("stop") 
+  .attr("offset", function(d,i) { 
+    return countScale( countPoint[i] )/width;
+  })   
+  .attr("stop-color", function(d,i) { 
+    return color( countPoint[i] ); 
+  });
+
+
+var legendWidth = Math.min(width*0.8, 400);
+
+//Color Legend container
+var legendsvg = svg.append("g")
+  .attr("class", "legendWrapper")
+  // .attr("transform", "translate(" + (width/2) + "," + (gridSize * days.length + 40) + ")");
+
+//Draw the Rectangle
+legendsvg.append("rect")
+  .attr("class", "legendRect")
+  .attr("x", -legendWidth/2)
+  .attr("y", 0)
+  //.attr("rx", hexRadius*1.25/2)
+  .attr("width", legendWidth)
+  .attr("height", 15)
+  .style("fill", "url(#legend-traffic)");
+  
+//Append title
+legendsvg.append("text")
+  .attr("class", "legendTitle")
+  .attr("x", 0)
+  .attr("y", -10)
+  .style("text-anchor", "middle")
+  .text("Sentiment");
 
 
 function showTip(x) {

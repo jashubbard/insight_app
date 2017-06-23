@@ -13,8 +13,6 @@ import time
 from scipy.stats import zscore
 
 
-print('kind of working')
-
 #connect to database
 user = 'insightdb' #add your username here (same as previous postgreSQL)                      
 host = 'mydbinstance.cgaia5rww7ar.us-west-2.rds.amazonaws.com'
