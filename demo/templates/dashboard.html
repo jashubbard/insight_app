@@ -90,7 +90,7 @@ body, html {
     background-image: url("../static/img/bg.jpg");
 
     /* Full height */
-    height: 120%; 
+    height: 110%; 
 
     /* Center and scale the image nicely */
     background-position: center;
@@ -258,19 +258,17 @@ top: 50%;
     <link href="../static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
 
-</head>
-<body>
 <script src="https://d3js.org/d3.v3.min.js"></script>
     <!-- jQuery -->
     <script src="../static/js/jquery.js"></script>
 
-<script> 
-$(document).ready(function(){
-    $("#flip").click(function(){
-        $("#panel").slideToggle("slow");
-    });
-});
-</script>
+</head>
+<body>
+
+
+
+
+
 <div  class='bg'>
 <div id='my_container'>
 
@@ -340,7 +338,7 @@ function toggler(divId) {
     val = Number(Math.round(val+'e2')+'e-2');
 
     var ratio=percent/maxval;
-    console.log(percent)
+
 
     var pie=d3.layout.pie()
             .value(function(d){return d})
@@ -520,7 +518,7 @@ var stardata = {{scores | safe}}
 
 for (i = 0; i < stardata.length; i++) { 
    drawradial(stardata[i].stars,5,'#chart')
-   console.log(stardata[i].topic)
+   // console.log(stardata[i].topic)
 }
 
 </script>
