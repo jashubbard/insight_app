@@ -604,7 +604,7 @@ var example5 = d3.select('#example5');
 
 // var coloursRainbow = ["#2c7bb6", "#00a6ca","#00ccbc","#90eb9d","#ffff8c","#f9d057","#f29e2e","#e76818","#d7191c"];
 var coloursRainbow = [  "#d7191c", "#e76818", "#f29e2e", "#f9d057","#ffff8c", "#90eb9d", "#00ccbc","#00a6ca","#2c7bb6"]
-var colourRangeRainbow = d3.range(-.6, .6, 1/ (coloursRainbow.length - 1));
+var colourRangeRainbow = d3.range(0, 1, 1/ (coloursRainbow.length - 1));
 colourRangeRainbow.push(1);
 // console.log(colourRangeRainbow)
        
@@ -616,8 +616,8 @@ var colorScaleRainbow = d3.scale.linear()
 
 //Needed to map the values of the dataset to the color scale
 var colorInterpolateRainbow = d3.scale.linear()
-  .domain([-.6,.6])
-  .range([-1,1]);
+  .domain([-.7,.7])
+  .range([0,1]);
 
 
 ///////////////////////////////////////////////////////////////////////////
