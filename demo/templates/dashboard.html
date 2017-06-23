@@ -14,7 +14,7 @@
 
 .axis-legend text {
     font-family: sans-serif;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .widget {
@@ -244,6 +244,11 @@ top: 50%;
   height:25px;
 
 }
+.legendTitle{
+  font: 24px sans-serif;
+
+}
+
 
 </style>
 
@@ -536,9 +541,9 @@ draw(topics,'#bars')
 
 function draw(data, div_id){
 
-var margin = {top: 20, right: 30, bottom: 73, left: 75},
+var margin = {top: 20, right: 30, bottom: 95, left: 75},
     width = 650 - margin.left - margin.right,
-    height = 630 - margin.top - margin.bottom;
+    height = 655 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
     .range([0, width]);
@@ -675,8 +680,8 @@ function mout(d) {
       //Append title
   svg.append("text")
     .attr("class", "legendTitle")
-    .attr("x", (width/2)-margin.left)
-    .attr("y", height+15)
+    .attr("x", ((width)/2)- margin.left-margin.right)
+    .attr("y", height+25)
     .text("Proportion of Reviews");
 
   svg.append("g")
@@ -706,17 +711,17 @@ function type(d) {
 ///////////////////////////////////////////////////////////////////////////
 
 var legendWidth = width * 0.6,
-  legendHeight = 15;
+  legendHeight = 20;
 
 //Color Legend container
 var legendsvg = svg.append("g")
   .attr("class", "legendWrapper")
-  .attr("transform", "translate(" + (width/2 - 10) + "," + (height+25) + ")");
+  .attr("transform", "translate(" + (width/2 - 10) + "," + (height+35) + ")");
 
 //Draw the Rectangle
 legendsvg.append("rect")
   .attr("class", "legendRect")
-  .attr("x", -legendWidth/2)
+  .attr("x", -legendWidth/2+15)
   .attr("y", 10)
   //.attr("rx", legendHeight/2)
   .attr("width", legendWidth)
@@ -751,7 +756,7 @@ var xAxis = d3.svg.axis()
 //Set up X axis
 legendsvg.append("g")
   .attr("class", "axis-legend")  //Assign "axis" class
-  .attr("transform", "translate(" + (-legendWidth/2) + "," + (13+ legendHeight) + ")")
+  .attr("transform", "translate(" + (-legendWidth/2+15) + "," + (13+ legendHeight) + ")")
   .call(xAxis);
 
 
