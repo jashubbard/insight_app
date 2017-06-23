@@ -5,6 +5,18 @@
 
 <style>
 
+.axis-legend path,
+.axis-legend line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis-legend text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
 .widget {
     margin: 0 auto;
     width:120px;
@@ -78,7 +90,7 @@ body, html {
     background-image: url("../static/img/bg.jpg");
 
     /* Full height */
-    height: 100%; 
+    height: 120%; 
 
     /* Center and scale the image nicely */
     background-position: center;
@@ -105,7 +117,7 @@ body, html {
 #my_container {
   width: 1160px;
   min-width:1100px;
-  height: 660px;
+  height: 700px;
   min-height: 500px;
   background-color: rgba(255,255,255,1);
   /*border: solid 2px #ccc;*/
@@ -114,7 +126,7 @@ body, html {
   padding: 10px;
   position: absolute;
   left: 2.5%;
-  top: 5%;
+  top: 2.5%;
   animation: fadein 3s;
     -moz-animation: fadein 2s; /* Firefox */
     -webkit-animation: fadein 2s; /* Safari and Chrome */
@@ -196,7 +208,6 @@ margin-left: 0px;
 
 rect {
   transition: fill 0.3s;
-    box-shadow: 1px 1px 4px 0px rgba(0,0,0,0.3);
 }
 rect:hover {
   fill: rgba(240, 107, 62,.8);
@@ -224,6 +235,14 @@ rect:hover {
 position:absolute;
 width: 100%;
 top: 50%;
+}
+
+#legend{
+  position: absolute;
+  top: 93%;
+  border: 1px solid black;
+  height:25px;
+
 }
 
 </style>
@@ -356,7 +375,25 @@ function toggler(divId) {
             }).append('g')
             .attr({
                 transform:'translate('+w/2+','+h/2+')'
-            });
+            })
+      .on('mouseover', mover)
+      .on('mouseleave', mout);
+
+      //Function to call when you mouseover a node
+function mover(d) {
+  var el = d3.select(this)
+    .transition()
+    .duration(10)     
+    .style("fill-opacity", 0.3);
+}
+
+//Mouseout function
+function mout(d) { 
+  var el = d3.select(this)
+     .transition()
+     .duration(500)
+     .style("fill-opacity", 1);
+};
 
     var defs = svg.append("svg:defs");
 
@@ -501,9 +538,9 @@ draw(topics,'#bars')
 
 function draw(data, div_id){
 
-var margin = {top: 20, right: 30, bottom: 40, left: 75},
+var margin = {top: 20, right: 30, bottom: 73, left: 75},
     width = 650 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom;
+    height = 630 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
     .range([0, width]);
@@ -514,7 +551,8 @@ var y = d3.scale.ordinal()
 var xAxis = d3.svg.axis()
     .scale(x)
     .tickSize(0)
-    .orient("bottom");
+    .orient("bottom").
+    tickFormat("");
 
 var yAxis = d3.svg.axis()
     .scale(y)
@@ -528,6 +566,11 @@ var svg = d3.select(div_id).append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+//Needed for gradients   
+var defs = svg.append("defs");
+
+
+// showing example sentences
 var tooltip = d3.select('#tooltip');
 var example1 = d3.select('#example1');
 var example2 = d3.select('#example2');
@@ -546,9 +589,6 @@ var example5 = d3.select('#example5');
   y.domain(data.map(function(d) { return d.topic; }));
   
 
-  // var color = d3.scaleSequential(d3.interpolateRdBu)
-  //   .domain([-1, 0, +1]);
-
   // var color = d3.scale.linear()
   //   .domain([-.6, 0, +.6])
   //   .range(["red", "gray", "green"]);
@@ -560,6 +600,43 @@ var example5 = d3.select('#example5');
   .range(["#FFFFDD", "#3E9583", "#1F2D86"])
   .interpolate(d3.interpolateHcl);
 
+///////////////////////////////////////////////////////////////////////////
+//////////// Get continuous color scale for the Rainbow ///////////////////
+///////////////////////////////////////////////////////////////////////////
+
+// var coloursRainbow = ["#2c7bb6", "#00a6ca","#00ccbc","#90eb9d","#ffff8c","#f9d057","#f29e2e","#e76818","#d7191c"];
+var coloursRainbow = [  "#d7191c", "#e76818", "#f29e2e", "#f9d057","#ffff8c", "#90eb9d", "#00ccbc","#00a6ca","#2c7bb6"]
+var colourRangeRainbow = d3.range(-.7, 0, .7 / (coloursRainbow.length - 1));
+colourRangeRainbow.push(1);
+       
+//Create color gradient
+var colorScaleRainbow = d3.scale.linear()
+  .domain(colourRangeRainbow)
+  .range(coloursRainbow)
+  .interpolate(d3.interpolateHcl);
+
+//Needed to map the values of the dataset to the color scale
+var colorInterpolateRainbow = d3.scale.linear()
+  .domain([-.7,.7])
+  // .domain(d3.extent(somData))
+  .range([0,1]);
+
+///////////////////////////////////////////////////////////////////////////
+//////////////////// Create the Rainbow color gradient ////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+//Calculate the gradient  
+defs.append("linearGradient")
+  .attr("id", "gradient-rainbow-colors")
+  .attr("x1", "0%").attr("y1", "0%")
+  .attr("x2", "100%").attr("y2", "0%")
+  .selectAll("stop") 
+  .data(coloursRainbow)                  
+  .enter().append("stop") 
+  .attr("offset", function(d,i) { return i/(coloursRainbow.length-1); })   
+  .attr("stop-color", function(d) { return d; });
+
+
 
 ///////////////////////////////////////////////////////////////////////////
 //////////////// Create the gradient for the legend ///////////////////////
@@ -567,10 +644,10 @@ var example5 = d3.select('#example5');
 
 //Extra scale since the color scale is interpolated
 var countScale = d3.scale.linear()
-  .domain([-1, 1])
-  // .domain([0, d3.max(accidents, function(d) {return d.count; })])
+  .domain([-.7, .7])
+  // .domain([0, d3.max(topics, function(d) {return d.count; })])
   .range([0, width])
- .interpolate(d3.interpolateHcl);
+ // .interpolate(d3.interpolateHcl);
 
 //Calculate the variables for the temp gradient
 var numStops = 10;
@@ -582,25 +659,47 @@ for(var i = 0; i < numStops; i++) {
 }//for i
 
 
-
-    // var color = d3.scaleSequential(d3.interpolatePiYG)
-
  var bars= svg.selectAll(".bar")
       .data(data)
       .enter().append("rect")
       // .attr("class", function(d) { return "bar bar--" + (d.sentiment < 0 ? "negative" : "positive"); })
       .attr("x", function(d) { return x(Math.min(0, d.prob)); })
       .attr("y", function(d) { return y(d.topic); })
-      .attr("fill", function(d) { return color(d.sentiment); })
+      // .attr("fill", function(d) { return color(d.sentiment); })
+      .style("fill", function (d) { return colorScaleRainbow(colorInterpolateRainbow(d.sentiment)); })
       .attr("width", function(d) { return Math.abs(x(d.prob) - x(0)); })
       .attr("height", y.rangeBand())
-      .on('click', showTip);
-      // .on('mouseleave', hideTip);;
+      .on('click', showTip)
+      .on('mouseover', mover)
+      .on('mouseleave', mout);
+
+//Function to call when you mouseover a node
+function mover(d) {
+  var el = d3.select(this)
+    .transition()
+    .duration(10)     
+    .style("fill-opacity", 0.3);
+}
+
+//Mouseout function
+function mout(d) { 
+  var el = d3.select(this)
+     .transition()
+     .duration(500)
+     .style("fill-opacity", 1);
+};
 
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
+
+      //Append title
+  svg.append("text")
+    .attr("class", "legendTitle")
+    .attr("x", (width/2)-margin.left)
+    .attr("y", height+15)
+    .text("Proportion of Reviews");
 
   svg.append("g")
       .attr("class", "y axis")
@@ -624,47 +723,58 @@ function type(d) {
 }
 
 
-//Create the gradient
-svg.append("defs")
-  .append("linearGradient")
-  .attr("id", "legend-traffic")
-  .attr("x1", "0%").attr("y1", "0%")
-  .attr("x2", "100%").attr("y2", "0%")
-  .selectAll("stop") 
-  .data(d3.range(numStops))                
-  .enter().append("stop") 
-  .attr("offset", function(d,i) { 
-    return countScale( countPoint[i] )/width;
-  })   
-  .attr("stop-color", function(d,i) { 
-    return color( countPoint[i] ); 
-  });
+///////////////////////////////////////////////////////////////////////////
+////////////////////////// Draw the legend ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 
-
-var legendWidth = Math.min(width*0.8, 400);
+var legendWidth = width * 0.6,
+  legendHeight = 15;
 
 //Color Legend container
 var legendsvg = svg.append("g")
   .attr("class", "legendWrapper")
-  // .attr("transform", "translate(" + (width/2) + "," + (gridSize * days.length + 40) + ")");
+  .attr("transform", "translate(" + (width/2 - 10) + "," + (height+25) + ")");
 
 //Draw the Rectangle
 legendsvg.append("rect")
   .attr("class", "legendRect")
   .attr("x", -legendWidth/2)
-  .attr("y", 0)
-  //.attr("rx", hexRadius*1.25/2)
+  .attr("y", 10)
+  //.attr("rx", legendHeight/2)
   .attr("width", legendWidth)
-  .attr("height", 15)
-  .style("fill", "url(#legend-traffic)");
+  .attr("height", legendHeight)
+  .style("fill", "url(#gradient-rainbow-colors)");
+  // .style("fill", "none");
   
-//Append title
-legendsvg.append("text")
-  .attr("class", "legendTitle")
-  .attr("x", 0)
-  .attr("y", -10)
-  .style("text-anchor", "middle")
-  .text("Sentiment");
+// //Append title
+// legendsvg.append("text")
+//   .attr("class", "legendTitle")
+//   .attr("x", 0)
+//   .attr("y", 0)
+//   .text("Sentiment");
+
+// //Set scale for x-axis
+var xScale = d3.scale.linear()
+   .range([0, legendWidth])
+   .domain([-1,1]);
+   //.domain([d3.min(pt.legendSOM.colorData)/100, d3.max(pt.legendSOM.colorData)/100]);
+
+var xScale = d3.scale.ordinal()
+    .domain(["negative", "positive"])
+    .rangePoints([0, legendWidth]);
+
+//Define x-axis
+var xAxis = d3.svg.axis()
+    .orient("bottom")
+    // .ticks(2)  //Set rough # of ticks
+    //.tickFormat(formatPercent)
+    .scale(xScale);
+
+//Set up X axis
+legendsvg.append("g")
+  .attr("class", "axis-legend")  //Assign "axis" class
+  .attr("transform", "translate(" + (-legendWidth/2) + "," + (13+ legendHeight) + ")")
+  .call(xAxis);
 
 
 function showTip(x) {
