@@ -11,14 +11,18 @@ from project_lib import *
 import json
 import time
 from scipy.stats import zscore
+import os
 
 
 #connect to database
 user = 'insightdb' #add your username here (same as previous postgreSQL)                      
-host = 'mydbinstance.cgaia5rww7ar.us-west-2.rds.amazonaws.com'
-dbname = 'project'
+# host = 'mydbinstance.cgaia5rww7ar.us-west-2.rds.amazonaws.com'
+host = 'localhost'
+# dbname = 'project'
+dbname = 'yelp'
 
-con=psycopg2.connect(dbname= dbname, host=host, port= 5432, user= user, password= 'datascience')
+con=psycopg2.connect(dbname= dbname, host=host, user= user, password= os.environ['PSQL_PASS'])
+# con=psycopg2.connect(dbname= dbname, host=host, port= 5432, user= user, password= 'datascience')
 
 @app.route('/')
 @app.route('/index')
@@ -62,9 +66,7 @@ def fancy():
   tmp = rtops.groupby(['top_topic']).apply(lambda x: x.nlargest(3,'sent_score')).reset_index(drop=True) #grab the top 3 for each topic
   
 
-  #grab example sentences for each one
-  examples = get_example_sentences(model,tmp,topn=10)
-  
+ 
   #get topic distribution (based on dominant topic)
   tdist = pd.crosstab(rtops.name,rtops.top_topic)
   tdist= tdist.stack()
@@ -73,6 +75,9 @@ def fancy():
   #get the mean sentiment and stars within each top_topic
   sdist = rtops.groupby(['name','top_topic'])['stars','sentiment'].mean()
 
+   #grab example sentences for each one
+  examples = get_example_sentences(model,tmp,topn=10,sentiment_scores = sdist)
+  
 
   #merge
   alldat = pd.concat([tdist,sdist],axis=1,join='outer')

@@ -13,6 +13,7 @@ from textblob import TextBlob
 import PIL
 import seaborn as sns
 
+
 #LOAD THE MODEL
 model = gensim.models.ldamodel.LdaModel.load('lda_az_5topics.gz', mmap=None)
 
@@ -132,8 +133,8 @@ def sentence_topics(model,rawtext,top_only=False):
     output = []
     
     for i,sent in enumerate(sent_tokenize_list):
-
         if len(preproc[i])> 5:
+     
             topics = tops[i]
             topics_df = pd.DataFrame(np.vstack(topics),columns=['topic','prob'])
             sent_df = pd.DataFrame(np.repeat(sent,topics_df.shape[0]),columns=['sentence'])
@@ -141,7 +142,10 @@ def sentence_topics(model,rawtext,top_only=False):
             tmp = pd.concat([sent_df,topics_df],axis=1)
             output.append(tmp)
         
-    output = pd.concat(output).reset_index(drop=True)
+    if len(output)>0:    
+        output = pd.concat(output).reset_index(drop=True)
+    else:
+        return(None)
     
     if top_only:
         idx = output.groupby(['sentence'])['prob'].transform(max) == output['prob']
@@ -153,6 +157,7 @@ def sentence_topics(model,rawtext,top_only=False):
     
 
 def topics_by_sentence(model,df,top_only=False):
+    
     output = []
 
     for i in range(len(df)):
@@ -161,15 +166,21 @@ def topics_by_sentence(model,df,top_only=False):
         
         if len(cleantext)>0:
             sents = sentence_topics(model,cleantext,top_only=top_only) 
-            sents['review_id'] = np.repeat(df.review_id[i],len(sents))
-            output.append(sents)
-                
-    output = pd.concat(output)
-
-    output['sentiment'] = [TextBlob(x).sentiment.polarity for x in output.sentence]
+            
+            if isinstance(sents,pd.DataFrame):
+                sents['review_id'] = np.repeat(df.review_id[i],len(sents))
+                output.append(sents)
+    
+    if len(output)>0:
+        output = pd.concat(output)
+        output['sentiment'] = [TextBlob(x).sentiment.polarity for x in output.sentence]
+    else:
+        return(None)
     
 
     return(output)
+
+
     
 
 def calc_ratings(model,df,top_only = False):
@@ -180,20 +191,26 @@ def calc_ratings(model,df,top_only = False):
     return(sents)
 
 
-def get_example_sentences(model,df,topics = None, topn = 3):
+def get_example_sentences(model,df,topics = None, topn = 3,sentiment_scores = None):
     
     if topics is None: 
         topics = np.arange(model.num_topics)
     
     output = topics_by_sentence(model,df,top_only=True)
-    output = output[output['topic'].isin(topics)].reset_index(drop=True)
     
-    grouped = output.groupby('topic')['prob'].nlargest(topn)
-    sentences = output.loc[grouped.index.levels[1].values,'sentence'] 
-    
-    topsents = pd.DataFrame(sentences).reset_index(drop=True)
-    topsents['topic'] = grouped.reset_index()['topic']
-    
+    if isinstance(output,pd.DataFrame):
+        output = output[output['topic'].isin(topics)].reset_index(drop=True)
+        grouped = output.groupby('topic')['prob'].nlargest(topn)
+        sentences = output.loc[grouped.index.levels[1].values,'sentence'] 
+
+        topsents = pd.DataFrame(sentences).reset_index(drop=True)
+        topsents['topic'] = grouped.reset_index()['topic']
+
+    else:
+        #generate an empty data frame to return
+        topsents = pd.DataFrame(np.arange(5),columns=['topic'])
+        topsents['sentence'] = np.repeat([''],5)
+        
     return(topsents)
     
 def make_wordclouds(model,save=True,fname='topic',num_words=20):
