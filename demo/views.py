@@ -16,13 +16,13 @@ import os
 
 #connect to database
 user = 'insightdb' #add your username here (same as previous postgreSQL)                      
-# host = 'mydbinstance.cgaia5rww7ar.us-west-2.rds.amazonaws.com'
-host = 'localhost'
-# dbname = 'project'
-dbname = 'yelp'
+host = 'mydbinstance.cgaia5rww7ar.us-west-2.rds.amazonaws.com'
+# host = 'localhost'
+dbname = 'project'
+# dbname = 'yelp'
 
 con=psycopg2.connect(dbname= dbname, host=host, user= user, password= os.environ['PSQL_PASS'])
-# con=psycopg2.connect(dbname= dbname, host=host, port= 5432, user= user, password= 'datascience')
+
 
 @app.route('/')
 @app.route('/index')
