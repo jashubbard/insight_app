@@ -54,6 +54,12 @@ def get_data(con,business_name):
     return(bizdf)
 
 
+def get_data_df(business_name):
+    #version of get_data for the non-SQL version of the site
+
+    df = pd.read_pickle('./demo/static/dfs/'+business_name+'.pklz')
+    return(df)
+
 #NLP STUFF
 stop_words = stopwords.words('english')
 

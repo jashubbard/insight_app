@@ -14,14 +14,14 @@ from scipy.stats import zscore
 import os
 
 
-#connect to database
-user = 'insightdb' #add your username here (same as previous postgreSQL)                      
-host = 'mydbinstance.cgaia5rww7ar.us-west-2.rds.amazonaws.com'
-# host = 'localhost'
-dbname = 'project'
-# dbname = 'yelp'
+# #connect to database
+# user = 'insightdb' #add your username here (same as previous postgreSQL)                      
+# host = 'mydbinstance.cgaia5rww7ar.us-west-2.rds.amazonaws.com'
+# # host = 'localhost'
+# dbname = 'project'
+# # dbname = 'yelp'
 
-con=psycopg2.connect(dbname= dbname, host=host, user= user, password= os.environ['PSQL_PASS'])
+# con=psycopg2.connect(dbname= dbname, host=host, user= user, password= os.environ['PSQL_PASS'])
 
 
 @app.route('/')
@@ -33,8 +33,9 @@ SELECT  distinct(name) FROM businesses
  WHERE  state='AZ' AND review_count>=200 AND categories LIKE '%Restaurants%'
  ORDER BY name;
 """
-    query_results = pd.read_sql_query(query,con)
+    # query_results = pd.read_sql_query(query,con)
     # print(query_results)
+    query_results = pd.read_pickle('./demo/static/dfs/biznames.pklz')
 
     return render_template("index.html", businesses = query_results.name)
 
