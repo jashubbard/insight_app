@@ -46,7 +46,8 @@ def fancy():
   print(biz_name)
 
   #get all data from that business
-  rtops= get_data(con,biz_name)
+  # rtops= get_data(con,biz_name)
+  rtops= get_data_df(biz_name)
 
   rtops['sentiment'] =[TextBlob(x).sentiment.polarity for x in rtops.text]
 
