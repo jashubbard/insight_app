@@ -56,8 +56,11 @@ def get_data(con,business_name):
 
 def get_data_df(business_name):
     #version of get_data for the non-SQL version of the site
+    biz= pd.read_pickle('./demo/static/dfs/biznames.pklz')
 
-    df = pd.read_pickle('./demo/static/dfs/'+business_name+'.pklz')
+    biz_id = biz[biz.name==business_name].business_id.values[0]
+
+    df = pd.read_pickle('./demo/static/dfs/'+biz_id+'.pklz')
     return(df)
 
 #NLP STUFF
